@@ -38,11 +38,25 @@
             </div>
             <div class="form-group">
                 <label>Rôle</label>
-                <select id="regRole">
+                <select id="regRole" onchange="updateRegisterFields()">
                     <option value="admin">Admin</option>
                     <option value="chauffeur">Chauffeur</option>
                     <option value="client">Client</option>
                 </select>
+            </div>
+            <div id="regNameFields" class="hidden">
+                <div class="form-group">
+                    <label id="regNameLabel">Nom</label>
+                    <input type="text" id="regNom" placeholder="Nom" required>
+                </div>
+                <div class="form-group" id="regPrenomGroup" class="hidden">
+                    <label>Prénom</label>
+                    <input type="text" id="regPrenom" placeholder="Prénom" required>
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="regTelephone" placeholder="0612345678" required>
+                </div>
             </div>
             <button class="btn btn-primary" onclick="register()">S'inscrire</button>
         </div>
@@ -91,6 +105,26 @@ function showLoginTab(tab) {
     document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
 }
 
+// Update register fields based on role
+function updateRegisterFields() {
+    const role = document.getElementById('regRole').value;
+    const nameFields = document.getElementById('regNameFields');
+    const prenomGroup = document.getElementById('regPrenomGroup');
+    const nameLabel = document.getElementById('regNameLabel');
+    
+    if (role === 'chauffeur') {
+        nameFields.classList.remove('hidden');
+        prenomGroup.classList.remove('hidden');
+        nameLabel.textContent = 'Nom';
+    } else if (role === 'client') {
+        nameFields.classList.remove('hidden');
+        prenomGroup.classList.add('hidden');
+        nameLabel.textContent = 'Nom (entreprise)';
+    } else {
+        nameFields.classList.add('hidden');
+    }
+}
+
 // Login
 async function login() {
     try {
@@ -112,11 +146,24 @@ async function login() {
 // Register
 async function register() {
     try {
-        const data = await api('POST', '/api/auth/register', {
+        const role = document.getElementById('regRole').value;
+        const body = {
             email: document.getElementById('regEmail').value,
             password: document.getElementById('regPassword').value,
-            role: document.getElementById('regRole').value
-        });
+            role: role
+        };
+        
+        // Ajouter nom/prénom/téléphone selon le rôle
+        if (role === 'chauffeur') {
+            body.nom = document.getElementById('regNom').value;
+            body.prenom = document.getElementById('regPrenom').value;
+            body.telephone = document.getElementById('regTelephone').value;
+        } else if (role === 'client') {
+            body.nom = document.getElementById('regNom').value;
+            body.telephone = document.getElementById('regTelephone').value;
+        }
+        
+        const data = await api('POST', '/api/auth/register', body);
         token = data.token;
         currentUser = data.user;
         localStorage.setItem('token', token);

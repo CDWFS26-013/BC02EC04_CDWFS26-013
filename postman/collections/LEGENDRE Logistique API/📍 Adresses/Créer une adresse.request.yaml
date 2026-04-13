@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{base_url}}/api/adresses"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "rue": "12 Rue de la Paix",
+      "code_postal": "75000",
+      "ville": "Paris",
+      "pays": "France"
+    }
+order: 3000

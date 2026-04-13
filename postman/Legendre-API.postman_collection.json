@@ -43,7 +43,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"newuser@legendre.fr\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}"
+              "raw": "{\n  \"email\": \"newchauffeur@legendre.fr\",\n  \"password\": \"password123\",\n  \"role\": \"chauffeur\",\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"telephone\": \"0612345678\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/auth/register",

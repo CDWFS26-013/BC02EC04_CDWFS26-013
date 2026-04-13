@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{base_url}}/api/livraisons"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "numero": "LIV-001",
+      "client_id": 1,
+      "adresse_id": 1,
+      "tournee_id": 1,
+      "date_livraison": "2026-04-15",
+      "statut": "en_attente"
+    }
+order: 3000
