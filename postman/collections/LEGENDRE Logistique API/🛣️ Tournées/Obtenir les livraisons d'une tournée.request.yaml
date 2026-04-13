@@ -1,6 +1,0 @@
-$kind: http-request
-url: "{{base_url}}/api/tournees/1/livraisons"
-method: GET
-headers:
-  Authorization: Bearer {{token}}
-order: 3000

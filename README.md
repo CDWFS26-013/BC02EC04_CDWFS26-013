@@ -60,7 +60,7 @@ PORT=3000
 
 ### 3. Initialiser la Base de Données
 ```bash
-node database/seed.js           # Créer les tables et charger les données
+node database/dump_2026-04-13          # Créer les tables et charger les données
 ```
 
 ### 4. Lancer l'application

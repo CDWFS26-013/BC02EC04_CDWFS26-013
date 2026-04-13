@@ -7,7 +7,8 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest --forceExit --detectOpenHandles",
-    "seed": "node database/seed.js"
+    "seed": "node database/seed.js",
+    "dump": "node database/dump.js"
   },
   "keywords": [],
   "author": "",
@@ -15,11 +16,14 @@
   "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "chalk": "^5.6.2",
+    "cli-table3": "^0.6.5",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-validator": "^7.3.2",
     "helmet": "^8.1.0",
+    "inquirer": "^13.4.1",
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.22.0",
     "swagger-jsdoc": "^6.2.8",

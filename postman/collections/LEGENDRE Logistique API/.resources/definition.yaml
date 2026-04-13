@@ -1,5 +1,0 @@
-$kind: collection
-description: Collection pour tester l'API REST LEGENDRE Logistique
-variables:
-  base_url: http://localhost:3000
-  token: ""

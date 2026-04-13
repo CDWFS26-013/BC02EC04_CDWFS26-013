@@ -35,12 +35,25 @@ const { authenticate } = require('../middleware/auth');
  *         role:
  *           type: string
  *           enum: [admin, chauffeur, client]
+ *           example: chauffeur
+ *         nom:
+ *           type: string
+ *           description: Obligatoire pour chauffeur et client
+ *           example: Dupont
+ *         prenom:
+ *           type: string
+ *           description: Obligatoire pour chauffeur uniquement
+ *           example: Jean
+ *         telephone:
+ *           type: string
+ *           description: Obligatoire pour chauffeur et client
+ *           example: "0612345678"
  *         chauffeur_id:
  *           type: string
- *           description: UUID du chauffeur (si rôle chauffeur)
+ *           description: UUID du chauffeur existant (optionnel, auto-créé si omis pour rôle chauffeur)
  *         client_id:
  *           type: string
- *           description: UUID du client (si rôle client)
+ *           description: UUID du client existant (optionnel, auto-créé si omis pour rôle client)
  *     AuthResponse:
  *       type: object
  *       properties:
@@ -65,12 +78,38 @@ const { authenticate } = require('../middleware/auth');
  *   post:
  *     tags: [Authentification]
  *     summary: Créer un nouveau compte utilisateur
+ *     description: |
+ *       Crée un nouveau compte avec les données obligatoires selon le rôle :
+ *       - **Admin** : email, password, role uniquement
+ *       - **Chauffeur** : email, password, role, nom, prenom, telephone (crée automatiquement une entrée dans la table chauffeurs)
+ *       - **Client** : email, password, role, nom, telephone (crée automatiquement une entrée dans la table clients)
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/RegisterRequest'
+ *           examples:
+ *             Admin:
+ *               value:
+ *                 email: admin@test.fr
+ *                 password: password123
+ *                 role: admin
+ *             Chauffeur:
+ *               value:
+ *                 email: chauffeur@test.fr
+ *                 password: password123
+ *                 role: chauffeur
+ *                 nom: Dupont
+ *                 prenom: Jean
+ *                 telephone: "0612345678"
+ *             Client:
+ *               value:
+ *                 email: client@test.fr
+ *                 password: password123
+ *                 role: client
+ *                 nom: SARL Test
+ *                 telephone: "0123456789"
  *     responses:
  *       201:
  *         description: Utilisateur créé avec succès
@@ -79,7 +118,7 @@ const { authenticate } = require('../middleware/auth');
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
  *       400:
- *         description: Données manquantes
+ *         description: Données manquantes ou invalides
  *       409:
  *         description: Email déjà utilisé
  */

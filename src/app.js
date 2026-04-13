@@ -25,11 +25,19 @@ app.use(express.urlencoded({ extended: true }));
 // Servir les fichiers statiques (interface graphique)
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// Export Swagger en JSON
+app.get('/api-docs/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
+
 // Documentation Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customCss: '.swagger-ui .topbar { display: none }',
     customSiteTitle: 'API LEGENDRE - Documentation'
 }));
+
+
 
 // Routes API
 app.use('/api/auth', authRoutes);
