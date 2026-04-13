@@ -1,0 +1,799 @@
+{
+  "info": {
+    "_postman_id": "legendre-api-collection",
+    "name": "LEGENDRE Logistique API",
+    "description": "Collection pour tester l'API REST LEGENDRE Logistique",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🔐 Authentification",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@legendre.fr\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@legendre.fr\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Profil Courant",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👨‍💼 Chauffeurs",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/chauffeurs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chauffeurs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtenir un chauffeur",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/chauffeurs/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chauffeurs", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Créer un chauffeur",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"email\": \"jean.dupont@legendre.fr\",\n  \"telephone\": \"0612345678\",\n  \"permis\": \"B\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/chauffeurs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chauffeurs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Modifier un chauffeur",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"telephone\": \"0687654321\",\n  \"permis\": \"BE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/chauffeurs/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chauffeurs", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Supprimer un chauffeur",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/chauffeurs/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chauffeurs", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛣️ Tournées",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tournees",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tournees"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtenir une tournée",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tournees/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tournees", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtenir les livraisons d'une tournée",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tournees/1/livraisons",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tournees", "1", "livraisons"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Créer une tournée",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": \"T-001\",\n  \"date_depart\": \"2026-04-15\",\n  \"chauffeur_id\": 1,\n  \"statut\": \"planifiee\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tournees",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tournees"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Modifier une tournée",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": \"T-001\",\n  \"date_depart\": \"2026-04-15\",\n  \"chauffeur_id\": 2,\n  \"statut\": \"en_cours\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tournees/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tournees", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Supprimer une tournée",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tournees/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tournees", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📦 Livraisons",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/livraisons",
+              "host": ["{{base_url}}"],
+              "path": ["api", "livraisons"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtenir une livraison",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/livraisons/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "livraisons", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Créer une livraison",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": \"LIV-001\",\n  \"client_id\": 1,\n  \"adresse_id\": 1,\n  \"tournee_id\": 1,\n  \"date_livraison\": \"2026-04-15\",\n  \"statut\": \"en_attente\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/livraisons",
+              "host": ["{{base_url}}"],
+              "path": ["api", "livraisons"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Modifier une livraison",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": \"LIV-001\",\n  \"client_id\": 1,\n  \"adresse_id\": 1,\n  \"tournee_id\": 1,\n  \"date_livraison\": \"2026-04-15\",\n  \"statut\": \"en_cours\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/livraisons/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "livraisons", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mettre à jour le statut",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"livree\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/livraisons/1/statut",
+              "host": ["{{base_url}}"],
+              "path": ["api", "livraisons", "1", "statut"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Supprimer une livraison",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/livraisons/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "livraisons", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👥 Clients",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/clients",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clients"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtenir un client",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/clients/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clients", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Créer un client",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Boulangerie Martin\",\n  \"email\": \"contact@boulangerie-martin.fr\",\n  \"telephone\": \"0123456789\",\n  \"type\": \"entreprise\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/clients",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clients"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Modifier un client",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Boulangerie Martin\",\n  \"email\": \"contact@boulangerie-martin.fr\",\n  \"telephone\": \"0987654321\",\n  \"type\": \"entreprise\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/clients/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clients", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Supprimer un client",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/clients/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clients", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📋 Marchandises",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/marchandises",
+              "host": ["{{base_url}}"],
+              "path": ["api", "marchandises"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtenir une marchandise",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/marchandises/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "marchandises", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Créer une marchandise",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Pain blanc 500g\",\n  \"poids\": 0.5,\n  \"volume\": 1.2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/marchandises",
+              "host": ["{{base_url}}"],
+              "path": ["api", "marchandises"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Modifier une marchandise",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Pain complet 500g\",\n  \"poids\": 0.55,\n  \"volume\": 1.3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/marchandises/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "marchandises", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Supprimer une marchandise",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/marchandises/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "marchandises", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📍 Adresses",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/adresses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "adresses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtenir une adresse",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/adresses/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "adresses", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Créer une adresse",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rue\": \"12 Rue de la Paix\",\n  \"code_postal\": \"75000\",\n  \"ville\": \"Paris\",\n  \"pays\": \"France\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/adresses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "adresses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Modifier une adresse",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rue\": \"15 Rue de la Paix\",\n  \"code_postal\": \"75000\",\n  \"ville\": \"Paris\",\n  \"pays\": \"France\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/adresses/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "adresses", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Supprimer une adresse",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/adresses/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "adresses", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

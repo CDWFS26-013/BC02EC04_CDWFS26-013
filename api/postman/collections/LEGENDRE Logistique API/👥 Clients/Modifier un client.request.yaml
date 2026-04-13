@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{base_url}}/api/clients/1"
+method: PUT
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "nom": "Boulangerie Martin",
+      "email": "contact@boulangerie-martin.fr",
+      "telephone": "0987654321",
+      "type": "entreprise"
+    }
+order: 4000

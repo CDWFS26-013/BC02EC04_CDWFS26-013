@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{base_url}}/api/tournees/1"
+method: PUT
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "numero": "T-001",
+      "date_depart": "2026-04-15",
+      "chauffeur_id": 2,
+      "statut": "en_cours"
+    }
+order: 5000

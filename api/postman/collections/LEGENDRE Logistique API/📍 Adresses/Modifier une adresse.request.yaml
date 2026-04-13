@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{base_url}}/api/adresses/1"
+method: PUT
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "rue": "15 Rue de la Paix",
+      "code_postal": "75000",
+      "ville": "Paris",
+      "pays": "France"
+    }
+order: 4000
