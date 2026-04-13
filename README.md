@@ -191,6 +191,9 @@ npm test -- --watch
 npm test -- --verbose
 ```
 
+#### Résultat Test
+![Test](/tests/test_unit.png)
+
 **Dépendances** : Jest, Supertest
 
 ## 📮 Postman Collection
