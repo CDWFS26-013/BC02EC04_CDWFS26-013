@@ -31,6 +31,11 @@ Système complet de gestion des tournées, livraisons, chauffeurs, clients, marc
 │   ├── adresses.html         # Gestion adresses
 │   ├── css/styles.css        # Styles centralisés
 │   └── js/app.js             # Fonctions communes
+├── tests/                      # Tests unitaires
+│   └── api.test.js           # Suite de tests Jest
+├── postman/                    # Collection Postman
+│   └── Legendre-API.postman_collection.json
+├── .env                       # Variables d'environnement (à créer)
 └── package.json              # Dépendances Node
 ```
 
@@ -55,8 +60,7 @@ PORT=3000
 
 ### 3. Initialiser la Base de Données
 ```bash
-node database/init.sql          # Créer les tables
-node database/seed.js           # Charger les données de test
+node database/seed.js           # Créer les tables et charger les données
 ```
 
 ### 4. Lancer l'application
@@ -65,6 +69,13 @@ npm start
 ```
 
 L'app démarre sur `http://localhost:3000`
+
+### 5. (Optionnel) Lancer les tests unitaires
+```bash
+npm test
+```
+
+Tests avec Jest & Supertest - Valide tous les endpoints
 
 ## 👥 Utilisateurs de Test
 
@@ -127,6 +138,18 @@ Authorization: Bearer <token>
 
 Session expirée → redirection vers login
 
+### 📋 Inscription - Créaction Automatique
+
+Lors de l'inscription, selon le rôle choisi :
+
+| Rôle | Champs requis | Action |
+|------|---------------|--------|
+| **Admin** | Email, Mot de passe | Crée simple account |
+| **Chauffeur** | Email, MDP, Nom, Prénom, Téléphone | Crée account + entrée dans table `chauffeurs` |
+| **Client** | Email, MDP, Nom, Téléphone | Crée account + entrée dans table `clients` |
+
+**Important** : Un chauffeur ou client créé via inscription est immédiatement disponible pour les CRUD et assignations !
+
 ## 🛠️ Technologies
 
 - **Backend** : Node.js, Express, MySQL, JWT
@@ -140,15 +163,82 @@ Session expirée → redirection vers login
 ✅ Suivi du statut des livraisons (en_attente, en_cours, livrée, échouée)  
 ✅ Permissions par rôle (admin, chauffeur, client)  
 ✅ Interface responsive et modulaire  
-✅ Documentation API interactive (Swagger)
+✅ Documentation API interactive (Swagger)  
+✅ Tests unitaires automatisés (Jest)  
+✅ Création automatique des chauffeurs/clients lors de l'inscription
 
-## 💡 Notes
+## 🧪 Tests Unitaires
 
-- Chaque page HTML est **indépendante** et modulaire
-- Appels API avec gestion automatique du token
-- Design cohérent via CSS centralisé
-- Code facile à maintenir et étendre
+### Fichier : `tests/api.test.js`
+Contient 35+ tests couvrant :
+- ✅ Authentification (login/register)
+- ✅ CRUD Chauffeurs
+- ✅ CRUD Tournées
+- ✅ CRUD Livraisons
+- ✅ CRUD Clients
+- ✅ CRUD Marchandises
+- ✅ CRUD Adresses
+
+### Lancer les tests
+```bash
+# Lancer tous les tests
+npm test
+
+# Mode watch (relance auto)
+npm test -- --watch
+
+# Output détaillé
+npm test -- --verbose
+```
+
+**Dépendances** : Jest, Supertest
+
+## 📮 Postman Collection
+
+Une collection Postman complète est fournie dans `/postman/Legendre-API.postman_collection.json`
+
+### Import & Utilisation
+1. Ouvrir Postman
+2. Clic sur `Import` → Sélectionner le fichier JSON
+3. Configurer variables :
+   - `base_url` : `http://localhost:3000`
+   - `token` : À récupérer après login
+
+### Endpoints testables
+- 3 endpoints Authentification
+- 5 endpoints par ressource (Chauffeurs, Tournées, Livraisons, Clients, Marchandises, Adresses)
+- **Total : 35+ endpoints**
+
+## 📌 Commandes Utiles
+
+```bash
+npm start          # Lancer le serveur
+npm run dev        # Lancer avec nodemon (reload auto)
+npm test           # Lancer les tests
+node database/seed.js  # Réinitialiser la BD
+npm run build      # (À ajouter si nécessaire)
+```
+
+
+
+## 💡 Architecture & Design
+
+- Chaque page HTML est **indépendante** et modulaire (un fichier par endpoint)
+- Appels API avec gestion automatique du token JWT
+- Design cohérent via CSS centralisé (`css/styles.css`)
+- Code facilement maintenable et extensible
+- Separation Frontend/Backend claire
+
+## 🐛 Troubleshooting
+
+| Problème | Solution |
+|----------|----------|
+| Erreur "Token manquant ou invalide" | Redémarrer le navigateur, vérifier localStorage |
+| Chauffeur ne s'ajoute pas | Vérifier que les champs nom, prénom, téléphone sont remplis |
+| Tests qui ne passent pas | Exécuter `npm install` puis `node database/seed.js` |
+| Erreur de connexion BDD | Vérifier fichier `.env` et config MySQL |
+| Port 3000 déjà utilisé | Changer `PORT` dans `.env` |
 
 ---
 
-**Besoin d'aide ?** Consultez `/api-docs` pour explorer l'API interactivement.
+**Besoin d'aide ?** Consultez `/api-docs` pour explorer l'API interactivement ou ouvrez une issue ! 🎯
