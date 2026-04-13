@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEGENDRE Logistique - Connexion</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-container">
+    <div class="login-box">
+        <h2>LEGENDRE Logistique</h2>
+        <div class="tabs">
+            <div class="tab active" onclick="showLoginTab('login')">Connexion</div>
+            <div class="tab" onclick="showLoginTab('register')">Inscription</div>
+        </div>
+        <div id="loginForm">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="admin@legendre.fr">
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" id="loginPassword" placeholder="password123">
+            </div>
+            <button class="btn btn-primary" onclick="login()">Se connecter</button>
+        </div>
+        <div id="registerForm" class="hidden">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="regEmail" placeholder="email@legendre.fr">
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" id="regPassword" placeholder="Mot de passe">
+            </div>
+            <div class="form-group">
+                <label>Rôle</label>
+                <select id="regRole">
+                    <option value="admin">Admin</option>
+                    <option value="chauffeur">Chauffeur</option>
+                    <option value="client">Client</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="register()">S'inscrire</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const API = '';
+let token = localStorage.getItem('token');
+let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+// Vérifier si déjà connecté
+document.addEventListener('DOMContentLoaded', () => {
+    if (token && currentUser) {
+        window.location.href = '/dashboard.html';
+    }
+});
+
+// API helper
+async function api(method, path, body) {
+    const opts = {
+        method,
+        headers: { 'Content-Type': 'application/json' }
+    };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(`${API}${path}`, opts);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur');
+    return data;
+}
+
+// Toast
+function toast(msg, type = 'success') {
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+}
+
+// Tabs
+function showLoginTab(tab) {
+    document.querySelectorAll('.login-box .tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+}
+
+// Login
+async function login() {
+    try {
+        const data = await api('POST', '/api/auth/login', {
+            email: document.getElementById('loginEmail').value,
+            password: document.getElementById('loginPassword').value
+        });
+        token = data.token;
+        currentUser = data.user;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        toast('Connexion réussie');
+        setTimeout(() => window.location.href = '/dashboard.html', 500);
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+// Register
+async function register() {
+    try {
+        const data = await api('POST', '/api/auth/register', {
+            email: document.getElementById('regEmail').value,
+            password: document.getElementById('regPassword').value,
+            role: document.getElementById('regRole').value
+        });
+        token = data.token;
+        currentUser = data.user;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        toast('Inscription réussie');
+        setTimeout(() => window.location.href = '/dashboard.html', 500);
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+</script>
+
+</body>
+</html>
+const API = '';
+let token = localStorage.getItem('token');
+let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+// Vérifier si déjà connecté
+document.addEventListener('DOMContentLoaded', () => {
+    if (token && currentUser) {
+        window.location.href = '/dashboard.html';
+    }
+});
+
+// API helper
+async function api(method, path, body) {
+    const opts = {
+        method,
+        headers: { 'Content-Type': 'application/json' }
+    };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(`${API}${path}`, opts);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur');
+    return data;
+}
+
+// Toast
+function toast(msg, type = 'success') {
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+}
+
+// Tabs
+function showLoginTab(tab) {
+    document.querySelectorAll('.login-box .tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+}
+
+// Login
+async function login() {
+    try {
+        const data = await api('POST', '/api/auth/login', {
+            email: document.getElementById('loginEmail').value,
+            password: document.getElementById('loginPassword').value
+        });
+        token = data.token;
+        currentUser = data.user;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        toast('Connexion réussie');
+        setTimeout(() => window.location.href = '/dashboard.html', 500);
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+// Register
+async function register() {
+    try {
+        const data = await api('POST', '/api/auth/register', {
+            email: document.getElementById('regEmail').value,
+            password: document.getElementById('regPassword').value,
+            role: document.getElementById('regRole').value
+        });
+        token = data.token;
+        currentUser = data.user;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        toast('Inscription réussie');
+        setTimeout(() => window.location.href = '/dashboard.html', 500);
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+</script>
+</body>
+</html>

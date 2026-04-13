@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livraisons - LEGENDRE Logistique</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div class="header">
+    <h1>LEGENDRE Logistique</h1>
+    <div class="user-info">
+        <span id="userEmail"></span>
+        <span class="badge" id="userRole"></span>
+        <button class="btn btn-sm btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+</div>
+
+<div class="container">
+    <nav class="sidebar">
+        <a href="/dashboard.html"><span class="icon">📊</span> Tableau de bord</a>
+        <a href="/chauffeurs.html"><span class="icon">🚛</span> Chauffeurs</a>
+        <a href="/tournees.html"><span class="icon">📋</span> Tournées</a>
+        <a href="/livraisons.html"><span class="icon">📦</span> Livraisons</a>
+        <a href="/clients.html"><span class="icon">👥</span> Clients</a>
+        <a href="/marchandises.html"><span class="icon">🏷️</span> Marchandises</a>
+        <a href="/adresses.html"><span class="icon">📍</span> Adresses</a>
+        <a href="/api-docs" target="_blank"><span class="icon">📄</span> Documentation</a>
+    </nav>
+
+    <div class="main">
+        <h2>Livraisons</h2>
+        <div id="actions"></div>
+        <div id="content"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalContent"></div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+async function loadData() {
+    try {
+        const data = await api('GET', '/api/livraisons');
+        let html = '';
+        
+        if (canEdit(currentUser.role, ['admin'])) {
+            html = '<button class="btn btn-success" onclick="openFormModal()">+ Nouvelle livraison</button>';
+        }
+        document.getElementById('actions').innerHTML = html;
+        
+        html = '<div class="card"><table><thead><tr><th>Client</th><th>Adresse</th><th>Heure prévue</th><th>Statut</th><th>Chauffeur</th><th>Actions</th></tr></thead><tbody>';
+        
+        if (data.length === 0) {
+            html += '<tr><td colspan="6" style="text-align:center;">Aucune livraison</td></tr>';
+        } else {
+            data.forEach(item => {
+                html += `<tr>
+                    <td>${item.client_nom}</td>
+                    <td>${item.rue}, ${item.code_postal} ${item.ville}</td>
+                    <td>${formatDateTime(item.heure_prevue)}</td>
+                    <td>${statusBadge(item.statut)}</td>
+                    <td>${item.chauffeur_prenom} ${item.chauffeur_nom}</td>
+                    <td class="table-actions">
+                        <button class="btn btn-sm btn-primary" onclick="viewDetail('${item.id}')">Détails</button>
+                        ${canEdit(currentUser.role, ['admin', 'chauffeur']) ? `<button class="btn btn-sm btn-success" onclick="openStatutModal('${item.id}', '${item.statut}')">Statut</button>` : ''}
+                        ${canDelete(currentUser.role, ['admin']) ? `<button class="btn btn-sm btn-danger" onclick="deleteItem('${item.id}', 'livraisons', loadData)">Supprimer</button>` : ''}
+                    </td>
+                </tr>`;
+            });
+        }
+        
+        html += '</tbody></table></div>';
+        document.getElementById('content').innerHTML = html;
+    } catch (e) {
+        toast(e.message, 'error');
+        document.getElementById('content').innerHTML = `<div class="card"><p>Erreur: ${e.message}</p></div>`;
+    }
+}
+
+async function viewDetail(id) {
+    try {
+        const item = await api('GET', `/api/livraisons/${id}`);
+        let html = `<h3>Détail de la livraison</h3>
+            <div style="margin-bottom:15px;">
+                <p><strong>Client:</strong> ${item.client_nom}</p>
+                <p><strong>Email:</strong> ${item.client_email}</p>
+                <p><strong>Adresse:</strong> ${item.rue}, ${item.code_postal} ${item.ville}, ${item.pays}</p>
+                <p><strong>Heure prévue:</strong> ${formatDateTime(item.heure_prevue)}</p>
+                <p><strong>Statut:</strong> ${statusBadge(item.statut)}</p>
+                <p><strong>Chauffeur:</strong> ${item.chauffeur_prenom} ${item.chauffeur_nom}</p>
+            </div>`;
+        
+        if (item.marchandises && item.marchandises.length > 0) {
+            html += '<h4>Marchandises</h4><table><thead><tr><th>Nom</th><th>Poids (kg)</th><th>Volume (m³)</th><th>Quantité</th></tr></thead><tbody>';
+            item.marchandises.forEach(m => {
+                html += `<tr><td>${m.nom}</td><td>${m.poids}</td><td>${m.volume}</td><td>${m.quantite}</td></tr>`;
+            });
+            html += '</tbody></table>';
+        }
+        
+        openModal(html);
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+async function openStatutModal(id, currentStatut) {
+    const html = `<h3>Mettre à jour le statut</h3>
+        <div class="form-grid">
+            <div class="form-group full"><label>Nouveau statut</label>
+                <select id="f-statut">
+                    <option value="en_attente" ${currentStatut === 'en_attente' ? 'selected' : ''}>En attente</option>
+                    <option value="en_cours" ${currentStatut === 'en_cours' ? 'selected' : ''}>En cours</option>
+                    <option value="livree" ${currentStatut === 'livree' ? 'selected' : ''}>Livrée</option>
+                    <option value="echouee" ${currentStatut === 'echouee' ? 'selected' : ''}>Échouée</option>
+                </select>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="updateStatut('${id}')">Enregistrer</button>
+            <button class="btn btn-danger" onclick="closeModal()">Annuler</button>
+        </div>`;
+    openModal(html);
+}
+
+async function updateStatut(id) {
+    try {
+        const body = { statut: document.getElementById('f-statut').value };
+        await api('PATCH', `/api/livraisons/${id}/statut`, body);
+        closeModal();
+        toast('Statut mis à jour');
+        loadData();
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+async function openFormModal(id) {
+    try {
+        const [tournees, clients, adresses, marchandises] = await Promise.all([
+            api('GET', '/api/tournees'),
+            api('GET', '/api/clients'),
+            api('GET', '/api/adresses'),
+            api('GET', '/api/marchandises')
+        ]);
+        
+        const tourneesOpt = tournees.map(t => `<option value="${t.id}">${formatDate(t.date)} - ${t.chauffeur_prenom} ${t.chauffeur_nom}</option>`).join('');
+        const clientsOpt = clients.map(c => `<option value="${c.id}">${c.nom}</option>`).join('');
+        const adressesOpt = adresses.map(a => `<option value="${a.id}">${a.rue}, ${a.code_postal} ${a.ville}</option>`).join('');
+        
+        let item = { heure_prevue: new Date().toISOString(), statut: 'en_attente', tournee_id: '', client_id: '', adresse_id: '' };
+        if (id) {
+            item = await api('GET', `/api/livraisons/${id}`);
+        }
+        
+        const html = `<h3>${id ? 'Modifier' : 'Nouvelle'} livraison</h3>
+            <div class="form-grid">
+                <div class="form-group"><label>Tournée</label><select id="f-tournee">${tourneesOpt}</select></div>
+                <div class="form-group"><label>Client</label><select id="f-client">${clientsOpt}</select></div>
+                <div class="form-group"><label>Adresse</label><select id="f-adresse">${adressesOpt}</select></div>
+                <div class="form-group"><label>Heure prévue</label><input type="datetime-local" id="f-heure" value="${item.heure_prevue.slice(0, 16)}"></div>
+                <div class="form-group"><label>Statut</label><select id="f-statut">
+                    <option value="en_attente" ${item.statut === 'en_attente' ? 'selected' : ''}>En attente</option>
+                    <option value="en_cours" ${item.statut === 'en_cours' ? 'selected' : ''}>En cours</option>
+                    <option value="livree" ${item.statut === 'livree' ? 'selected' : ''}>Livrée</option>
+                    <option value="echouee" ${item.statut === 'echouee' ? 'selected' : ''}>Échouée</option>
+                </select></div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="saveLivraison('${id || ''}')">Enregistrer</button>
+                <button class="btn btn-danger" onclick="closeModal()">Annuler</button>
+            </div>`;
+        
+        openModal(html);
+        if (id) {
+            document.getElementById('f-tournee').value = item.tournee_id;
+            document.getElementById('f-client').value = item.client_id;
+            document.getElementById('f-adresse').value = item.adresse_id;
+        }
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+async function saveLivraison(id) {
+    try {
+        const body = {
+            tournee_id: document.getElementById('f-tournee').value,
+            client_id: document.getElementById('f-client').value,
+            adresse_id: document.getElementById('f-adresse').value,
+            heure_prevue: document.getElementById('f-heure').value,
+            statut: document.getElementById('f-statut').value
+        };
+        
+        await api(id ? 'PUT' : 'POST', `/api/livraisons${id ? '/' + id : ''}`, body);
+        closeModal();
+        toast(id ? 'Livraison modifiée' : 'Livraison créée');
+        loadData();
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+window.addEventListener('load', loadData);
+</script>
+
+</body>
+</html>

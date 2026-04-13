@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournées - LEGENDRE Logistique</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div class="header">
+    <h1>LEGENDRE Logistique</h1>
+    <div class="user-info">
+        <span id="userEmail"></span>
+        <span class="badge" id="userRole"></span>
+        <button class="btn btn-sm btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+</div>
+
+<div class="container">
+    <nav class="sidebar">
+        <a href="/dashboard.html"><span class="icon">📊</span> Tableau de bord</a>
+        <a href="/chauffeurs.html"><span class="icon">🚛</span> Chauffeurs</a>
+        <a href="/tournees.html"><span class="icon">📋</span> Tournées</a>
+        <a href="/livraisons.html"><span class="icon">📦</span> Livraisons</a>
+        <a href="/clients.html"><span class="icon">👥</span> Clients</a>
+        <a href="/marchandises.html"><span class="icon">🏷️</span> Marchandises</a>
+        <a href="/adresses.html"><span class="icon">📍</span> Adresses</a>
+        <a href="/api-docs" target="_blank"><span class="icon">📄</span> Documentation</a>
+    </nav>
+
+    <div class="main">
+        <h2>Tournées</h2>
+        <div id="actions"></div>
+        <div id="content"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalContent"></div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+async function loadData() {
+    try {
+        const data = await api('GET', '/api/tournees');
+        let html = '';
+        
+        if (canEdit(currentUser.role, ['admin'])) {
+            html = '<button class="btn btn-success" onclick="openFormModal()">+ Nouvelle tournée</button>';
+        }
+        document.getElementById('actions').innerHTML = html;
+        
+        html = '<div class="card"><table><thead><tr><th>Date</th><th>Chauffeur</th><th>Actions</th></tr></thead><tbody>';
+        
+        if (data.length === 0) {
+            html += '<tr><td colspan="3" style="text-align:center;">Aucune tournée</td></tr>';
+        } else {
+            data.forEach(item => {
+                html += `<tr>
+                    <td>${formatDate(item.date)}</td>
+                    <td>${item.chauffeur_prenom} ${item.chauffeur_nom}</td>
+                    <td class="table-actions">
+                        <button class="btn btn-sm btn-primary" onclick="viewLivraisons('${item.id}')">Livraisons</button>
+                        ${canEdit(currentUser.role, ['admin']) ? `<button class="btn btn-sm btn-warning" onclick="openFormModal('${item.id}')">Modifier</button>` : ''}
+                        ${canDelete(currentUser.role, ['admin']) ? `<button class="btn btn-sm btn-danger" onclick="deleteItem('${item.id}', 'tournees', loadData)">Supprimer</button>` : ''}
+                    </td>
+                </tr>`;
+            });
+        }
+        
+        html += '</tbody></table></div>';
+        document.getElementById('content').innerHTML = html;
+    } catch (e) {
+        toast(e.message, 'error');
+        document.getElementById('content').innerHTML = `<div class="card"><p>Erreur: ${e.message}</p></div>`;
+    }
+}
+
+async function openFormModal(id) {
+    try {
+        const chauffeurs = await api('GET', '/api/chauffeurs');
+        const options = chauffeurs.map(c => `<option value="${c.id}">${c.prenom} ${c.nom}</option>`).join('');
+        
+        let item = { date: new Date().toISOString().split('T')[0], chauffeur_id: '' };
+        if (id) {
+            item = await api('GET', `/api/tournees/${id}`);
+            item.date = item.date ? item.date.split('T')[0] : '';
+        }
+        
+        const html = `<h3>${id ? 'Modifier' : 'Nouvelle'} tournée</h3>
+            <div class="form-grid">
+                <div class="form-group"><label>Date</label><input type="date" id="f-date" value="${item.date}"></div>
+                <div class="form-group"><label>Chauffeur</label><select id="f-chauffeur">${options}</select></div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="saveTournee('${id || ''}')">Enregistrer</button>
+                <button class="btn btn-danger" onclick="closeModal()">Annuler</button>
+            </div>`;
+        
+        openModal(html);
+        if (id) document.getElementById('f-chauffeur').value = item.chauffeur_id;
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+async function saveTournee(id) {
+    try {
+        const body = {
+            date: document.getElementById('f-date').value,
+            chauffeur_id: document.getElementById('f-chauffeur').value
+        };
+        
+        await api(id ? 'PUT' : 'POST', `/api/tournees${id ? '/' + id : ''}`, body);
+        closeModal();
+        toast(id ? 'Tournée modifiée' : 'Tournée créée');
+        loadData();
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+async function viewLivraisons(tourneeId) {
+    try {
+        const data = await api('GET', `/api/tournees/${tourneeId}/livraisons`);
+        let html = '<h3>Livraisons de la tournée</h3>';
+        html += '<table><thead><tr><th>Client</th><th>Adresse</th><th>Heure prévue</th><th>Statut</th></tr></thead><tbody>';
+        
+        if (data.length === 0) {
+            html += '<tr><td colspan="4" style="text-align:center;">Aucune livraison</td></tr>';
+        } else {
+            data.forEach(item => {
+                html += `<tr>
+                    <td>${item.client_nom}</td>
+                    <td>${item.rue}, ${item.code_postal} ${item.ville}</td>
+                    <td>${formatDateTime(item.heure_prevue)}</td>
+                    <td>${statusBadge(item.statut)}</td>
+                </tr>`;
+            });
+        }
+        
+        html += '</tbody></table>';
+        openModal(html);
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+window.addEventListener('load', loadData);
+</script>
+
+</body>
+</html>

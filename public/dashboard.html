@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - LEGENDRE Logistique</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div class="header">
+    <h1>LEGENDRE Logistique</h1>
+    <div class="user-info">
+        <span id="userEmail"></span>
+        <span class="badge" id="userRole"></span>
+        <button class="btn btn-sm btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+</div>
+
+<div class="container">
+    <nav class="sidebar">
+        <a href="/dashboard.html"><span class="icon">📊</span> Tableau de bord</a>
+        <a href="/chauffeurs.html"><span class="icon">🚛</span> Chauffeurs</a>
+        <a href="/tournees.html"><span class="icon">📋</span> Tournées</a>
+        <a href="/livraisons.html"><span class="icon">📦</span> Livraisons</a>
+        <a href="/clients.html"><span class="icon">👥</span> Clients</a>
+        <a href="/marchandises.html"><span class="icon">🏷️</span> Marchandises</a>
+        <a href="/adresses.html"><span class="icon">📍</span> Adresses</a>
+        <a href="/api-docs" target="_blank"><span class="icon">📄</span> Documentation</a>
+    </nav>
+
+    <div class="main">
+        <h2>Tableau de bord</h2>
+        <div id="statsContainer"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalContent"></div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+// Charger les statistiques
+async function loadStats() {
+    try {
+        const main = document.getElementById('statsContainer');
+        main.innerHTML = '<div class="loading">Chargement des statistiques</div>';
+
+        const stats = {};
+
+        // Charger les données basées sur le rôle
+        if (currentUser.role === 'admin') {
+            const chauffeurs = await api('GET', '/api/chauffeurs');
+            stats.chauffeurs = chauffeurs.length;
+
+            const clients = await api('GET', '/api/clients');
+            stats.clients = clients.length;
+        }
+
+        const livraisons = await api('GET', '/api/livraisons');
+        stats.livraisons = livraisons.length;
+        stats.en_cours = livraisons.filter(l => l.statut === 'en_cours').length;
+        stats.livrees = livraisons.filter(l => l.statut === 'livree').length;
+        stats.en_attente = livraisons.filter(l => l.statut === 'en_attente').length;
+
+        // Afficher les stats
+        let html = '<div class="stats-grid">';
+        if (currentUser.role === 'admin') {
+            html += `<div class="stat-card"><div class="stat-value">${stats.chauffeurs}</div><div class="stat-label">Chauffeurs</div></div>`;
+            html += `<div class="stat-card"><div class="stat-value">${stats.clients}</div><div class="stat-label">Clients</div></div>`;
+        }
+        html += `<div class="stat-card"><div class="stat-value">${stats.livraisons}</div><div class="stat-label">Livraisons totales</div></div>`;
+        html += `<div class="stat-card"><div class="stat-value">${stats.en_cours}</div><div class="stat-label">En cours</div></div>`;
+        html += `<div class="stat-card"><div class="stat-value">${stats.livrees}</div><div class="stat-label">Livrées</div></div>`;
+        html += `<div class="stat-card"><div class="stat-value">${stats.en_attente}</div><div class="stat-label">En attente</div></div>`;
+        html += '</div>';
+
+        html += `<div class="card">
+            <h3>Informations</h3>
+            <p>Connecté en tant que: <strong>${currentUser.email}</strong></p>
+            <p>Rôle: <strong>${currentUser.role.toUpperCase()}</strong></p>
+            <p><a class="link-swagger" href="/api-docs" target="_blank">📄 Consulter la documentation API (Swagger)</a></p>
+        </div>`;
+
+        main.innerHTML = html;
+    } catch (e) {
+        toast(e.message, 'error');
+        document.getElementById('statsContainer').innerHTML = `<div class="card"><p>Erreur: ${e.message}</p></div>`;
+    }
+}
+
+// Charger au démarrage
+window.addEventListener('load', loadStats);
+</script>
+
+</body>
+</html>

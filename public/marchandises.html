@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marchandises - LEGENDRE Logistique</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div class="header">
+    <h1>LEGENDRE Logistique</h1>
+    <div class="user-info">
+        <span id="userEmail"></span>
+        <span class="badge" id="userRole"></span>
+        <button class="btn btn-sm btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+</div>
+
+<div class="container">
+    <nav class="sidebar">
+        <a href="/dashboard.html"><span class="icon">📊</span> Tableau de bord</a>
+        <a href="/chauffeurs.html"><span class="icon">🚛</span> Chauffeurs</a>
+        <a href="/tournees.html"><span class="icon">📋</span> Tournées</a>
+        <a href="/livraisons.html"><span class="icon">📦</span> Livraisons</a>
+        <a href="/clients.html"><span class="icon">👥</span> Clients</a>
+        <a href="/marchandises.html"><span class="icon">🏷️</span> Marchandises</a>
+        <a href="/adresses.html"><span class="icon">📍</span> Adresses</a>
+        <a href="/api-docs" target="_blank"><span class="icon">📄</span> Documentation</a>
+    </nav>
+
+    <div class="main">
+        <h2>Marchandises</h2>
+        <div id="actions"></div>
+        <div id="content"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalContent"></div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+async function loadData() {
+    try {
+        const data = await api('GET', '/api/marchandises');
+        let html = '';
+        
+        if (canEdit(currentUser.role, ['admin'])) {
+            html = '<button class="btn btn-success" onclick="openFormModal()">+ Nouvelle marchandise</button>';
+        }
+        document.getElementById('actions').innerHTML = html;
+        
+        html = '<div class="card"><table><thead><tr><th>Nom</th><th>Poids (kg)</th><th>Volume (m³)</th><th>Actions</th></tr></thead><tbody>';
+        
+        if (data.length === 0) {
+            html += '<tr><td colspan="4" style="text-align:center;">Aucune marchandise</td></tr>';
+        } else {
+            data.forEach(item => {
+                html += `<tr>
+                    <td>${item.nom}</td>
+                    <td>${item.poids}</td>
+                    <td>${item.volume}</td>
+                    <td class="table-actions">
+                        ${canEdit(currentUser.role, ['admin']) ? `<button class="btn btn-sm btn-warning" onclick="openFormModal('${item.id}')">Modifier</button>` : ''}
+                        ${canDelete(currentUser.role, ['admin']) ? `<button class="btn btn-sm btn-danger" onclick="deleteItem('${item.id}', 'marchandises', loadData)">Supprimer</button>` : ''}
+                    </td>
+                </tr>`;
+            });
+        }
+        
+        html += '</tbody></table></div>';
+        document.getElementById('content').innerHTML = html;
+    } catch (e) {
+        toast(e.message, 'error');
+        document.getElementById('content').innerHTML = `<div class="card"><p>Erreur: ${e.message}</p></div>`;
+    }
+}
+
+async function openFormModal(id) {
+    try {
+        let item = { nom: '', poids: '', volume: '' };
+        if (id) {
+            item = await api('GET', `/api/marchandises/${id}`);
+        }
+        
+        const html = `<h3>${id ? 'Modifier' : 'Nouvelle'} marchandise</h3>
+            <div class="form-grid">
+                <div class="form-group full"><label>Nom</label><input id="f-nom" value="${item.nom}"></div>
+                <div class="form-group"><label>Poids (kg)</label><input type="number" id="f-poids" value="${item.poids}"></div>
+                <div class="form-group"><label>Volume (m³)</label><input type="number" step="0.01" id="f-volume" value="${item.volume}"></div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="saveItem('${id || ''}', 'marchandises')">Enregistrer</button>
+                <button class="btn btn-danger" onclick="closeModal()">Annuler</button>
+            </div>`;
+        
+        openModal(html);
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+async function saveItem(id, endpoint) {
+    try {
+        const body = {
+            nom: document.getElementById('f-nom').value,
+            poids: parseFloat(document.getElementById('f-poids').value),
+            volume: parseFloat(document.getElementById('f-volume').value)
+        };
+        
+        await api(id ? 'PUT' : 'POST', `/api/${endpoint}${id ? '/' + id : ''}`, body);
+        closeModal();
+        toast(id ? 'Élément modifié' : 'Élément créé');
+        loadData();
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+window.addEventListener('load', loadData);
+</script>
+
+</body>
+</html>
