@@ -209,6 +209,26 @@ Une collection Postman complète est fournie dans `/postman/Legendre-API.postman
 - 5 endpoints par ressource (Chauffeurs, Tournées, Livraisons, Clients, Marchandises, Adresses)
 - **Total : 35+ endpoints**
 
+### 📸 Exemples de Tests Postman
+
+#### Vue Admin - Endpoints disponibles
+![Postman Admin View](postman_img/Adminview/postman.png)
+
+#### Test POST Tournée
+![POST Tournée](postman_img/post_tournee.png)
+
+#### Gestion Clients
+![Clients](postman_img/Adminview/postman_clients.png)
+
+#### Gestion Livraisons
+![Livraisons](postman_img/Adminview/postman_livraison.png)
+
+#### Gestion Marchandises
+![Marchandises](postman_img/Adminview/postman_marchandises.png)
+
+#### Gestion Tournées
+![Tournées](postman_img/Adminview/postman_tournee.png)
+
 ## 📌 Commandes Utiles
 
 ```bash
